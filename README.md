@@ -39,13 +39,16 @@ It is a drop-in replacement for the KD loss, with a single knob $\rho$ (smaller 
 import torch.nn.functional as F
 
 def cist_kl(student_logits, teacher_logits, rho=3.0):
-    t = teacher_logits - teacher_logits.mean(-1, keepdim=True)            # mean-centered logits
+    # mean-centered logits
+    t = teacher_logits - teacher_logits.mean(-1, keepdim=True)
     s = student_logits - student_logits.mean(-1, keepdim=True).detach()
-    tau_t = (t.max(-1).values / rho).clamp(min=1)                         # sample-wise temperatures
+    # separate, sample-wise temperatures
+    tau_t = (t.max(-1).values / rho).clamp(min=1)
     tau_s = (s.detach().max(-1).values / rho).clamp(min=1)
-    kl = F.kl_div(F.log_softmax(s / tau_s[:, None], -1), F.softmax(t / tau_t[:, None], -1),
-                  reduction="none").sum(-1)
-    return (kl * tau_t * tau_s).mean()                                    # confidence-aware reweighting
+    kl = F.kl_div(F.log_softmax(s / tau_s[:, None], -1),
+                  F.softmax(t / tau_t[:, None], -1), reduction="none").sum(-1)
+    # confidence-aware reweighting
+    return (kl * tau_t * tau_s).mean()
 ```
 
 ## Results
@@ -100,9 +103,12 @@ Checkpoints and a per-epoch `log.jsonl` are written to `outputs/<dataset>/<metho
 
 ```bash
 cd llm
-bash scripts/download.sh                                        # Dolly + eval sets + GPT-2 XL teacher
-bash scripts/distill.sh gpt2 cist --rho <rho>                   # GPT-2 XL -> GPT-2 Base, 4 GPUs
-bash scripts/eval.sh gpt2 results/gpt2/cist/seed10/best_rougeL  # Dolly, Vicuna, Super-NI, UnNI x 5 seeds
+# data (Dolly + evaluation sets) and the GPT-2 XL teacher
+bash scripts/download.sh
+# distill GPT-2 XL -> GPT-2 Base on 4 GPUs
+bash scripts/distill.sh gpt2 cist --rho <rho>
+# ROUGE-L on Dolly, Vicuna, Super-NI, UnNI over 5 seeds, then mean ± std
+bash scripts/eval.sh gpt2 results/gpt2/cist/seed10/best_rougeL
 python tools/collect_results.py results/gpt2/cist/seed10/best_rougeL
 ```
 
