@@ -1,0 +1,22 @@
+seed: 42
+output_dir: outputs
+
+data:
+  name: cifar100
+  root: ./data
+  batch_size: 64
+  num_workers: 4
+
+optim:  # 0.01 for MobileNetV2 / ShuffleNet students (Appendix A.1)
+  lr: 0.05
+  momentum: 0.9
+  weight_decay: 5.0e-4
+  epochs: 240
+  milestones: [150, 180, 210]
+  gamma: 0.1
+
+model:
+  arch: resnet32x4
+
+loss:
+  method: ce

@@ -1,0 +1,7 @@
+torch>=2.0
+torchvision>=0.15
+numpy
+pyyaml
+tqdm
+matplotlib    # analyze_entropy.py --plot, tsne.py
+scikit-learn  # tsne.py

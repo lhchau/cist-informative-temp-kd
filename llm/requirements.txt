@@ -1,0 +1,8 @@
+torch>=2.0
+transformers>=4.42,<5
+deepspeed>=0.14
+accelerate
+numpy
+tqdm
+rouge-score
+huggingface_hub>=0.34  # provides the `hf` CLI used by scripts/download.sh

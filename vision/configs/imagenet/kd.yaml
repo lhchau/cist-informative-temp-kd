@@ -1,0 +1,26 @@
+seed: 42
+output_dir: outputs
+
+data:
+  name: imagenet
+  root: ./data   # expects ./data/imagenet/{train,val}
+  batch_size: 512
+  num_workers: 32
+
+optim:
+  lr: 0.2
+  momentum: 0.9
+  weight_decay: 1.0e-4
+  epochs: 100
+  milestones: [30, 60, 90]
+  gamma: 0.1
+
+model:  # teacher uses torchvision ImageNet weights
+  teacher: ResNet34
+  arch: ResNet18
+
+loss:
+  method: kd
+  T: 1.0
+  ce_weight: 0.1
+  kl_weight: 0.9

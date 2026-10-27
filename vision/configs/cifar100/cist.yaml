@@ -1,0 +1,27 @@
+seed: 42
+output_dir: outputs
+
+data:
+  name: cifar100
+  root: ./data
+  batch_size: 64
+  num_workers: 4
+
+optim:  # 0.01 for MobileNetV2 / ShuffleNet students (Appendix A.1)
+  lr: 0.05
+  momentum: 0.9
+  weight_decay: 5.0e-4
+  epochs: 240
+  milestones: [150, 180, 210]
+  gamma: 0.1
+
+model:
+  teacher: resnet32x4
+  teacher_ckpt: checkpoints/cifar_teachers/resnet32x4_vanilla/ckpt_epoch_240.pth
+  arch: resnet8x4
+
+loss:  # rho = 3, lambda_KL = 8 (Sec. 5.4 / Appendix A)
+  method: cist
+  rho: 3.0
+  ce_weight: 0.1
+  kl_weight: 8.0
